@@ -112,8 +112,17 @@ class StrataWxFeed {
         if (!due || this.airportBusy) return;
         this.airportBusy = true;
         this.airportAt = Date.now();
-        get<{ advisories?: { state?: string; rangeNm?: number; items?: Advisory[] } }>(`airport/${encodeURIComponent(station)}`, AIRPORT_TIMEOUT_MS)
+        get<{ pending?: string[]; advisories?: { state?: string; rangeNm?: number; items?: Advisory[] } }>(
+            `airport/${encodeURIComponent(station)}`,
+            AIRPORT_TIMEOUT_MS,
+        )
             .then(({ body }) => {
+                // While StrataWx is still fetching them, the list comes back empty and marked pending:
+                // keep the last list and ask again on the next poll rather than showing NONE.
+                if (body?.pending?.includes("advisories")) {
+                    this.airportAt = 0;
+                    return;
+                }
                 const a = body?.advisories;
                 // "none" is a real empty list; anything else unreadable keeps the last list.
                 if (a && (a.state === "available" || a.state === "none")) {
