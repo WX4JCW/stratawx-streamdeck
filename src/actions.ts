@@ -2,7 +2,7 @@ import { action, SingletonAction, type KeyAction, type KeyDownEvent, type WillAp
 
 import { keyImage, type Look } from "./render.js";
 import { strataWx, type Current, type Snapshot, type Status } from "./stratawx.js";
-import { altimeter, pirepCount, pirepDetail, pireps, temperature, wind, type Reading } from "./weather.js";
+import { altimeter, conditions, pirepCount, pirepDetail, pireps, temperature, wind, type Reading } from "./weather.js";
 
 /** Every placed key, so the feed can redraw them all and stop polling when none are left. */
 const live = new Set<WeatherAction>();
@@ -73,6 +73,12 @@ export class TempFAction extends WeatherAction {
 export class WindAction extends WeatherAction {
     protected caption() { return "WIND"; }
     protected read(current: Current, status: Status) { return wind(current, status); }
+}
+
+@action({ UUID: "com.acms.stratawx.conditions" })
+export class ConditionsAction extends WeatherAction {
+    protected caption() { return "CONDITIONS"; }
+    protected read(current: Current, status: Status) { return conditions(current, status); }
 }
 
 /**

@@ -17,6 +17,11 @@ export type Current = {
     qnhPa: number;
     temperatureC: number;
     windLayers: WindLayer[];
+    /** Bases and tops above sea level; coverage 0..1. */
+    cloudLayers?: { baseM: number; topM: number; coverage: number }[];
+    visibilityM?: number;
+    precipitationMmHr?: number;
+    thunderstorm?: number;
     hazards?: { levels?: HazardLevel[] };
     aircraftAltitudeM?: number;
 };

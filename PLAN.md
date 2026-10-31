@@ -37,6 +37,12 @@ The plugin never calls any other address (some of them change StrataWx settings)
 - Wind color scale (owner, 2026-10-31: "perfect execute that"): on the ground and up to 3,000 ft
   above it, the wind number is colored by Beaufort strength: plain under 11 kt, yellow 11–21,
   orange 22–33, red 34 and up. Higher up it stays plain. Speed shows two digits (180/08).
+- Conditions key (owner, 2026-10-31: "Yes, build it"): icon and word for the weather at the
+  aircraft, checked in this order: thunderstorm (red ring), rain or snow (snow at 0 °C or below),
+  fog under 1,000 m visibility, mist under 5,000 m, then the sky from the most-covered layer in
+  oktas (CLEAR, FEW 1–2, SCATTERED 3–4, BROKEN 5–7, OVERCAST 8). Bottom line: CIG (lowest broken
+  or overcast base above the ground), or VIS in statute miles with no ceiling. Placed at row two,
+  sixth key, next to PIREPs.
 - StrataWx not running: every key shows its caption, "--" and STRATAWX OFF.
 - Altimeter shows inHg, as StrataWx is set (`units.pressure`).
 

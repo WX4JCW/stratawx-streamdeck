@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
     "Name": "StrataWX",
-    "Version": "1.0.0.3",
+    "Version": "1.0.0.4",
     "Author": "ACMS Digital Systems",
     "Description": "Altimeter, temperature, wind and PIREPs from StrataWx for Microsoft Flight Simulator, on keys.",
     "Category": "StrataWX",
@@ -92,6 +92,22 @@
             "UUID": "com.acms.stratawx.pireps",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Nearby PIREPs. Press to step through them.",
+            "Controllers": [
+                "Keypad"
+            ],
+            "UserTitleEnabled": false,
+            "SupportedInMultiActions": false,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
+        },
+        {
+            "Name": "Conditions",
+            "UUID": "com.acms.stratawx.conditions",
+            "Icon": "imgs/actions/icon",
+            "Tooltip": "Current conditions at the aircraft, with the ceiling or visibility.",
             "Controllers": [
                 "Keypad"
             ],

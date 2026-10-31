@@ -49,6 +49,36 @@ function line(y: number, raw: string, fill: string, width: number, max: number, 
     );
 }
 
+/** Weather icons, flat shapes drawn in the space between the caption band and the word (y 36..96). */
+const SUN = "#FFD23F";
+const ICONS = {
+    sun:
+        `<circle cx="72" cy="64" r="13" fill="${SUN}"/><g stroke="${SUN}" stroke-width="4" stroke-linecap="round">` +
+        `<line x1="72" y1="40" x2="72" y2="45"/><line x1="72" y1="83" x2="72" y2="88"/><line x1="48" y1="64" x2="53" y2="64"/>` +
+        `<line x1="91" y1="64" x2="96" y2="64"/><line x1="55" y1="47" x2="59" y2="51"/><line x1="85" y1="77" x2="89" y2="81"/>` +
+        `<line x1="89" y1="47" x2="85" y2="51"/><line x1="59" y1="77" x2="55" y2="81"/></g>`,
+    partly:
+        `<circle cx="62" cy="57" r="12" fill="${SUN}"/><g fill="#E6EEF2"><circle cx="70" cy="72" r="11"/>` +
+        `<circle cx="84" cy="66" r="13"/><circle cx="96" cy="74" r="9"/><rect x="60" y="72" width="44" height="11" rx="5.5"/></g>`,
+    cloud:
+        `<g fill="#C9D4DA"><circle cx="58" cy="68" r="13"/><circle cx="76" cy="58" r="17"/><circle cx="92" cy="70" r="11"/>` +
+        `<rect x="45" y="68" width="58" height="14" rx="7"/></g>`,
+    rain:
+        `<g fill="#AEB9C0"><circle cx="58" cy="58" r="12"/><circle cx="76" cy="49" r="15"/><circle cx="92" cy="60" r="10"/>` +
+        `<rect x="46" y="58" width="56" height="12" rx="6"/></g><g stroke="#5DA9FF" stroke-width="4" stroke-linecap="round">` +
+        `<line x1="58" y1="76" x2="54" y2="86"/><line x1="72" y1="76" x2="68" y2="86"/><line x1="86" y1="76" x2="82" y2="86"/></g>`,
+    snow:
+        `<g fill="#AEB9C0"><circle cx="58" cy="58" r="12"/><circle cx="76" cy="49" r="15"/><circle cx="92" cy="60" r="10"/>` +
+        `<rect x="46" y="58" width="56" height="12" rx="6"/></g><g fill="#FFFFFF"><circle cx="57" cy="80" r="3.5"/>` +
+        `<circle cx="72" cy="85" r="3.5"/><circle cx="87" cy="80" r="3.5"/></g>`,
+    storm:
+        `<g fill="#8E99A1"><circle cx="58" cy="56" r="12"/><circle cx="76" cy="47" r="15"/><circle cx="92" cy="58" r="10"/>` +
+        `<rect x="46" y="56" width="56" height="12" rx="6"/></g><polygon points="76,68 64,84 73,84 68,96 84,78 75,78 80,68" fill="${SUN}"/>`,
+    fog:
+        `<g stroke="#C9D4DA" stroke-width="5" stroke-linecap="round"><line x1="46" y1="52" x2="98" y2="52"/>` +
+        `<line x1="40" y1="64" x2="104" y2="64"/><line x1="46" y1="76" x2="98" y2="76"/><line x1="54" y1="88" x2="90" y2="88"/></g>`,
+};
+
 export type Look = {
     caption: string;
     /** Main text; a "|" breaks it into two lines. */
@@ -58,6 +88,8 @@ export type Look = {
     accent?: string;
     /** Colour for the main text, such as the temperature scale; otherwise white on an alert, the app's light cyan at rest. */
     valueColor?: string;
+    /** A weather icon; the value then becomes a smaller word under it. */
+    icon?: keyof typeof ICONS;
 };
 
 export function keyImage(look: Look): string {
@@ -66,8 +98,9 @@ export function keyImage(look: Look): string {
     const lines = look.value.split("|");
     const bottom = look.sub ? 26 : 0;
     const mid = 30 + (144 - 30 - bottom) / 2;
-    const value =
-        lines.length === 1
+    const value = look.icon
+        ? ICONS[look.icon] + line(110, look.value, valueFill, 128, 18, 12)
+        : lines.length === 1
             ? line(Math.round(mid + 36 * 0.36), lines[0]!, valueFill, 128, 36, 12)
             : line(Math.round(mid - 4), lines[0]!, valueFill, 128, 22, 12) + line(Math.round(mid + 23), lines[1]!, valueFill, 128, 22, 12);
     const body =

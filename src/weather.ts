@@ -17,7 +17,8 @@ export const ICE = "#E8F7FF";
 export const AMBER = "#FFB020";
 export const RED = "#FF4040";
 
-export type Reading = { value: string; sub: string; accent?: string; valueColor?: string };
+export type Icon = "sun" | "partly" | "cloud" | "rain" | "snow" | "storm" | "fog";
+export type Reading = { value: string; sub: string; accent?: string; valueColor?: string; icon?: Icon };
 
 /**
  * Temperature number colours, in Apple Weather's steps (iPhone Life, MacRumors): blue
@@ -129,6 +130,49 @@ export function wind(current: Current, status: Status): Reading {
     if (dir === 0) dir = 360;
     const low = onSurface(status) || !status.aircraft || status.aircraft.altAglM <= WIND_COLOR_AGL_M;
     return { value: `${String(dir).padStart(3, "0")}/${String(speed).padStart(2, "0")}`, sub, valueColor: low ? windColor(speed) : undefined };
+}
+
+/** Visibility in statute miles as a pilot reads it: 10 SM at most, quarters below 1. */
+function visibilitySm(m: number): string {
+    const sm = m / 1609.344;
+    if (sm >= 10) return "10";
+    if (sm >= 1) return String(Math.round(sm));
+    const q = Math.round(sm * 4);
+    return q === 0 ? "0" : q === 4 ? "1" : ["", "1/4", "1/2", "3/4"][q]!;
+}
+
+/**
+ * Current conditions at the aircraft, in the order a pilot cares about: thunderstorm
+ * (red ring), precipitation (snow at 0 °C or below), fog or mist from visibility, then
+ * the sky from the most-covered cloud layer in oktas. The bottom line is the ceiling,
+ * the lowest broken or overcast layer above the ground, or the visibility with no ceiling.
+ */
+export function conditions(current: Current, _status: Status): Reading {
+    const ground = current.groundElevationM;
+    const layers = current.cloudLayers ?? [];
+    const oktas = (coverage: number) => Math.round(coverage * 8);
+    const ceiling = layers
+        .filter((l) => oktas(l.coverage) >= 5 && l.baseM > ground)
+        .map((l) => (l.baseM - ground) * FT_PER_M)
+        .sort((a, b) => a - b)[0];
+    const vis = current.visibilityM ?? Infinity;
+    const sub =
+        ceiling !== undefined
+            ? `CIG ${(Math.round(ceiling / 100) * 100).toLocaleString("en-US")} FT`
+            : `VIS ${visibilitySm(vis)} SM`;
+
+    if ((current.thunderstorm ?? 0) > 0) return { value: "T-STORM", sub, accent: RED, icon: "storm" };
+    if ((current.precipitationMmHr ?? 0) > 0.1) {
+        return current.temperatureC <= 0 ? { value: "SNOW", sub, icon: "snow" } : { value: "RAIN", sub, icon: "rain" };
+    }
+    if (vis < 1000) return { value: "FOG", sub, icon: "fog" };
+    if (vis < 5000) return { value: "MIST", sub, icon: "fog" };
+    const most = Math.max(0, ...layers.map((l) => oktas(l.coverage)));
+    if (most === 0) return { value: "CLEAR", sub, icon: "sun" };
+    if (most <= 2) return { value: "FEW", sub, icon: "partly" };
+    if (most <= 4) return { value: "SCATTERED", sub, icon: "partly" };
+    if (most <= 7) return { value: "BROKEN", sub, icon: "cloud" };
+    return { value: "OVERCAST", sub, icon: "cloud" };
 }
 
 /** A PIREP field such as "/TB MOD" or "/IC LGT RIME", up to the next field. */
