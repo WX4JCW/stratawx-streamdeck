@@ -1,0 +1,25 @@
+{
+    "name": "stratawx",
+    "version": "1.0.0",
+    "description": "Stream Deck keys that show StrataWx weather for Microsoft Flight Simulator.",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "build": "rollup -c",
+        "watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.acms.stratawx\"",
+        "pack": "npm run build && streamdeck pack com.acms.stratawx.sdPlugin --output dist --force"
+    },
+    "dependencies": {
+        "@elgato/streamdeck": "^2.1.2"
+    },
+    "devDependencies": {
+        "@rollup/plugin-commonjs": "^28.0.1",
+        "@rollup/plugin-node-resolve": "^15.3.0",
+        "@rollup/plugin-typescript": "^12.1.1",
+        "@tsconfig/node20": "^20.1.4",
+        "@types/node": "^20.19.43",
+        "rollup": "^4.24.0",
+        "tslib": "^2.8.0",
+        "typescript": "^5.6.0"
+    }
+}

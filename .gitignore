@@ -1,0 +1,11 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+com.acms.stratawx.sdPlugin/bin/
+
+# Stream Deck writes plugin logs into the plugin folder at runtime
+com.acms.stratawx.sdPlugin/logs/
+
+*.log
