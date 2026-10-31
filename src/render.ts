@@ -56,11 +56,13 @@ export type Look = {
     sub?: string;
     /** Ring and status line colour for an alert (freezing, a moderate or severe PIREP). */
     accent?: string;
+    /** Colour for the main text, such as the temperature scale; otherwise white on an alert, the app's light cyan at rest. */
+    valueColor?: string;
 };
 
 export function keyImage(look: Look): string {
     const c = COLORS;
-    const valueFill = look.accent ? "#FFFFFF" : c.text;
+    const valueFill = look.valueColor ?? (look.accent ? "#FFFFFF" : c.text);
     const lines = look.value.split("|");
     const bottom = look.sub ? 26 : 0;
     const mid = 30 + (144 - 30 - bottom) / 2;

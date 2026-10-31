@@ -31,6 +31,9 @@ The plugin never calls any other address (some of them change StrataWx settings)
   - PIREPs: amber ring for any moderate turbulence or icing report nearby, red ring for severe;
     status names the worst one (MOD TURB, MOD ICE, SEV TURB, SEV ICE).
   - Altimeter and wind: no alert colors.
+- Temperature color scale (owner, 2026-10-31: "perfect execute that"): the temp number is colored
+  in Apple Weather's steps by the shown whole °C: blue at 0 or below (brighter than Apple's dark
+  blue, to read on the key), light blue 1–14, green 15–19, yellow 20–24, orange 25–29, red 30 and up.
 - StrataWx not running: every key shows its caption, "--" and STRATAWX OFF.
 - Altimeter shows inHg, as StrataWx is set (`units.pressure`).
 

@@ -17,7 +17,25 @@ export const ICE = "#E8F7FF";
 export const AMBER = "#FFB020";
 export const RED = "#FF4040";
 
-export type Reading = { value: string; sub: string; accent?: string };
+export type Reading = { value: string; sub: string; accent?: string; valueColor?: string };
+
+/**
+ * Temperature number colours, in Apple Weather's steps (iPhone Life, MacRumors): blue
+ * below freezing, then light blue, green, yellow, orange, red. The blue is brighter than
+ * Apple's dark blue, which cannot be read on the dark key.
+ */
+const TEMP_STEPS: [belowC: number, color: string][] = [
+    [0, "#6E8BFF"],
+    [15, "#9CCBFF"],
+    [20, "#4ADE80"],
+    [25, "#FFE14D"],
+    [30, "#FF9F1A"],
+    [Infinity, "#FF4D4D"],
+];
+
+export function tempColor(c: number): string {
+    return c <= 0 ? TEMP_STEPS[0]![1] : TEMP_STEPS.find(([below]) => c < below)![1];
+}
 
 function onSurface(status: Status): boolean {
     const a = status.aircraft;
@@ -62,11 +80,15 @@ export function temperatureC(current: Current, status: Status): number {
     return interpolate(points, status.aircraft.altM, (a, b, f) => a + (b - a) * f) ?? current.temperatureC;
 }
 
-/** One temperature key; at or below freezing it gets the ice ring. */
+/** One temperature key, its number coloured by the steps above; at or below freezing it also gets the ice ring. */
 export function temperature(current: Current, status: Status, unit: "C" | "F"): Reading {
-    const c = temperatureC(current, status);
-    const shown = Math.round(unit === "C" ? c : (c * 9) / 5 + 32);
-    return c <= 0 ? { value: `${shown}°${unit}`, sub: "FREEZING", accent: ICE } : { value: `${shown}°${unit}`, sub: "AT AIRCRAFT" };
+    // Colour and ring follow the whole °C value, so a key reading 25°C is never in the 20s colour.
+    const c = Math.round(temperatureC(current, status));
+    const shown = unit === "C" ? c : Math.round((temperatureC(current, status) * 9) / 5 + 32);
+    const valueColor = tempColor(c);
+    return c <= 0
+        ? { value: `${shown}°${unit}`, sub: "FREEZING", accent: ICE, valueColor }
+        : { value: `${shown}°${unit}`, sub: "AT AIRCRAFT", valueColor };
 }
 
 /** Wind at the aircraft's height, as 270/18, or CALM under 3 knots. */

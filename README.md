@@ -9,7 +9,7 @@ ChasePlane and Sim Clock plugins):
 | Key | Shows |
 |---|---|
 | **Altimeter** | QNH, in inHg or hPa as StrataWx is set |
-| **Temp °C** / **Temp °F** | outside air temperature at the aircraft; an ice ring and FREEZING at 0 °C or below |
+| **Temp °C** / **Temp °F** | outside air temperature at the aircraft, the number coloured in Apple Weather's steps (blue at 0 °C or below, light blue to 14, green 15–19, yellow 20–24, orange 25–29, red 30 and up); an ice ring and FREEZING at 0 °C or below |
 | **Wind** | wind at the aircraft's height (`270/18`, or `CALM`) |
 | **PIREPs** | how many PIREPs StrataWx reports nearby; an amber ring for a moderate turbulence or icing report, red for severe. Press to step through them, nearest first |
 
