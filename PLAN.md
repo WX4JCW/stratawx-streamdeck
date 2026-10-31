@@ -34,6 +34,9 @@ The plugin never calls any other address (some of them change StrataWx settings)
 - Temperature color scale (owner, 2026-10-31: "perfect execute that"): the temp number is colored
   in Apple Weather's steps by the shown whole °C: blue at 0 or below (brighter than Apple's dark
   blue, to read on the key), light blue 1–14, green 15–19, yellow 20–24, orange 25–29, red 30 and up.
+- Wind color scale (owner, 2026-10-31: "perfect execute that"): on the ground and up to 3,000 ft
+  above it, the wind number is colored by Beaufort strength: plain under 11 kt, yellow 11–21,
+  orange 22–33, red 34 and up. Higher up it stays plain. Speed shows two digits (180/08).
 - StrataWx not running: every key shows its caption, "--" and STRATAWX OFF.
 - Altimeter shows inHg, as StrataWx is set (`units.pressure`).
 

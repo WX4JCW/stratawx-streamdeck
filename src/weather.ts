@@ -33,6 +33,24 @@ const TEMP_STEPS: [belowC: number, color: string][] = [
     [Infinity, "#FF4D4D"],
 ];
 
+/**
+ * Wind number colours by Beaufort strength, in the same yellow, orange and red as the
+ * temperature scale: light (under 11 kt) stays plain, moderate to fresh (11-21) yellow,
+ * strong to near gale (22-33) orange, gale (34 and up) red. Only near the ground, where
+ * wind matters for takeoff and landing; 80 kt at cruise is normal and stays plain.
+ */
+const WIND_STEPS: [belowKt: number, color: string | undefined][] = [
+    [11, undefined],
+    [22, "#FFE14D"],
+    [34, "#FF9F1A"],
+    [Infinity, "#FF4D4D"],
+];
+const WIND_COLOR_AGL_M = 914.4; // 3,000 ft
+
+export function windColor(kt: number): string | undefined {
+    return WIND_STEPS.find(([below]) => kt < below)![1];
+}
+
 export function tempColor(c: number): string {
     return c <= 0 ? TEMP_STEPS[0]![1] : TEMP_STEPS.find(([below]) => c < below)![1];
 }
@@ -109,7 +127,8 @@ export function wind(current: Current, status: Status): Reading {
     if (speed < 3) return { value: "CALM", sub };
     let dir = Math.round(((Math.atan2(v.x, v.y) * 180) / Math.PI + 360) % 360 / 10) * 10;
     if (dir === 0) dir = 360;
-    return { value: `${String(dir).padStart(3, "0")}/${speed}`, sub };
+    const low = onSurface(status) || !status.aircraft || status.aircraft.altAglM <= WIND_COLOR_AGL_M;
+    return { value: `${String(dir).padStart(3, "0")}/${String(speed).padStart(2, "0")}`, sub, valueColor: low ? windColor(speed) : undefined };
 }
 
 /** A PIREP field such as "/TB MOD" or "/IC LGT RIME", up to the next field. */
