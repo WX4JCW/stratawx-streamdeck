@@ -28,54 +28,80 @@
             "UUID": "com.acms.stratawx.altimeter",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Altimeter setting from StrataWx.",
-            "Controllers": ["Keypad"],
+            "Controllers": [
+                "Keypad"
+            ],
             "UserTitleEnabled": false,
             "SupportedInMultiActions": false,
-            "States": [{ "Image": "imgs/actions/key" }]
-        }
-        ,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
+        },
         {
             "Name": "Temp °C",
             "UUID": "com.acms.stratawx.tempc",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Outside air temperature at the aircraft, in Celsius.",
-            "Controllers": ["Keypad"],
+            "Controllers": [
+                "Keypad"
+            ],
             "UserTitleEnabled": false,
             "SupportedInMultiActions": false,
-            "States": [{ "Image": "imgs/actions/key" }]
-        }
-        ,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
+        },
         {
             "Name": "Temp °F",
             "UUID": "com.acms.stratawx.tempf",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Outside air temperature at the aircraft, in Fahrenheit.",
-            "Controllers": ["Keypad"],
+            "Controllers": [
+                "Keypad"
+            ],
             "UserTitleEnabled": false,
             "SupportedInMultiActions": false,
-            "States": [{ "Image": "imgs/actions/key" }]
-        }
-        ,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
+        },
         {
             "Name": "Wind",
             "UUID": "com.acms.stratawx.wind",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Wind at the aircraft's height.",
-            "Controllers": ["Keypad"],
+            "Controllers": [
+                "Keypad"
+            ],
             "UserTitleEnabled": false,
             "SupportedInMultiActions": false,
-            "States": [{ "Image": "imgs/actions/key" }]
-        }
-        ,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
+        },
         {
             "Name": "PIREPs",
             "UUID": "com.acms.stratawx.pireps",
             "Icon": "imgs/actions/icon",
             "Tooltip": "Nearby PIREPs. Press to step through them.",
-            "Controllers": ["Keypad"],
+            "Controllers": [
+                "Keypad"
+            ],
             "UserTitleEnabled": false,
             "SupportedInMultiActions": false,
-            "States": [{ "Image": "imgs/actions/key" }]
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ]
         }
     ]
 }
