@@ -12,13 +12,14 @@ ChasePlane and Sim Clock plugins):
 | **Temp °C** / **Temp °F** | outside air temperature at the aircraft, the number coloured in Apple Weather's steps (blue at 0 °C or below, light blue to 14, green 15–19, yellow 20–24, orange 25–29, red 30 and up); an ice ring and FREEZING at 0 °C or below |
 | **Wind** | wind at the aircraft's height (`270/18`, or `CALM`); within 3,000 ft of the ground the number is coloured by Beaufort strength: yellow 11–21 kt, orange 22–33, red 34 and up |
 | **Conditions** | an icon and word for the weather at the aircraft (CLEAR, FEW, SCATTERED, BROKEN, OVERCAST, RAIN, SNOW, T-STORM, FOG, MIST), with the ceiling (lowest broken or overcast layer above the ground) or, with no ceiling, the visibility; a red ring for a thunderstorm |
-| **PIREPs** | how many PIREPs StrataWx reports nearby; an amber ring for a moderate turbulence or icing report, red for severe. Press to step through them, nearest first |
+| **Advisories** | how many PIREPs and SIGMETs the StrataWx app lists on its airport page (within 100 NM of the station it takes the weather from); a red ring for any SIGMET, otherwise amber for a moderate turbulence or icing PIREP, red for severe. Press to step through them, SIGMETs first, then PIREPs, nearest first |
 
 ## How it reads StrataWx
 
 The StrataWx desktop app runs a local weather service on `127.0.0.1:19286`. The plugin asks it
 every 5 seconds, while a key is on the deck, for `/api/v1/weather/current` and
-`/api/v1/weather/status`, and nothing else: it only reads, and never changes StrataWx settings.
+`/api/v1/weather/status`, and once a minute for `/api/v1/airport/<station>` (the advisories),
+and nothing else: it only reads, and never changes StrataWx settings.
 With StrataWx closed the keys show `--` and `STRATAWX OFF`.
 
 ## Build

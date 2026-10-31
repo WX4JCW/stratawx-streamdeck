@@ -54,3 +54,9 @@ The plugin never calls any other address (some of them change StrataWx settings)
 - Five actions: Altimeter, Temp C, Temp F, Wind, PIREPs.
 - Install: raise the manifest version, install, then place the five keys on the main page.
   Before writing the profile: back it up and quit Stream Deck.
+- Advisories key (owner, 2026-10-31: "Yes, build it"): replaces the PIREPs key in place (same
+  action ID, so the placed key keeps working). Reads the advisories the StrataWx app shows on its
+  airport page, `GET /api/v1/airport/<station>` once a minute, for the METAR station StrataWx takes
+  the weather from (KDAL at the time): PIREPs and SIGMETs within 100 NM. The `/weather/status`
+  list it used before had gone empty while the app still showed advisories. Any SIGMET: red ring.
+  Press order: SIGMETs first, then PIREPs, each nearest first, with distance and compass direction.

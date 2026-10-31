@@ -183,55 +183,87 @@ function field(text: string, name: string): string | undefined {
 /** 0 smooth or none, 1 light, 2 moderate (light-moderate counts), 3 severe or extreme. */
 function level(intensity: string | undefined): number {
     const s = (intensity ?? "").toUpperCase();
-    if (/SEV|EXTR/.test(s)) return 3;
+    if (/SEV|EXT/.test(s)) return 3;
     if (/MOD/.test(s)) return 2;
     if (/LGT|LIGHT/.test(s)) return 1;
     return 0;
 }
 
-type Pirep = { turb?: string; ice?: string; advisory: Advisory };
+/** One advisory read for the key: a PIREP's turbulence and icing, or a SIGMET's hazard. */
+export type Item = { kind: "PIREP" | "SIGMET"; turb?: string; ice?: string; advisory: Advisory };
 
-function readPirep(a: Advisory): Pirep {
+function readItem(a: Advisory): Item {
+    if (a.kind === "SIGMET") return { kind: "SIGMET", advisory: a };
     const turb = a.turbIntensity ?? field(a.text, "TB")?.split(/\s/)[0];
     const ice = field(a.text, "IC")?.split(/\s/)[0];
-    return { turb, ice, advisory: a };
+    return { kind: "PIREP", turb, ice, advisory: a };
 }
 
-/** PIREPs StrataWx reports nearby, nearest first. */
-export function pireps(status: Status): Pirep[] {
-    return (status.advisories ?? [])
-        .filter((a) => a.kind === "PIREP")
-        .sort((a, b) => a.distanceNm - b.distanceNm)
-        .map(readPirep);
+/** The StrataWx airport page's advisories: SIGMETs first, as the real hazard warnings, then PIREPs, each nearest first. */
+export function advisories(list: Advisory[]): Item[] {
+    return list
+        .filter((a) => a.kind === "PIREP" || a.kind === "SIGMET")
+        .sort((a, b) => (a.kind === b.kind ? a.distanceNm - b.distanceNm : a.kind === "SIGMET" ? -1 : 1))
+        .map(readItem);
 }
 
-/** The PIREP key at rest: how many, and the worst moderate or severe report as the alert. */
-export function pirepCount(list: Pirep[]): Reading {
-    if (list.length === 0) return { value: "NONE", sub: "NEARBY" };
+/** The key at rest: the total, any SIGMET as the red alert, else the worst moderate or severe PIREP. */
+export function advisoryCount(items: Item[], rangeNm: number): Reading {
+    if (items.length === 0) return { value: "NONE", sub: `WITHIN ${rangeNm} NM` };
+    const sigmets = items.filter((i) => i.kind === "SIGMET").length;
+    if (sigmets > 0) return { value: String(items.length), sub: `${sigmets} SIGMET`, accent: RED };
     let worst = { lvl: 1, label: "" };
-    for (const p of list) {
+    for (const p of items) {
         for (const [kind, intensity] of [["TURB", p.turb], ["ICE", p.ice]] as const) {
             const lvl = level(intensity);
             if (lvl > worst.lvl) worst = { lvl, label: `${lvl === 3 ? "SEV" : "MOD"} ${kind}` };
         }
     }
-    if (worst.lvl >= 2) return { value: String(list.length), sub: worst.label, accent: worst.lvl === 3 ? RED : AMBER };
-    return { value: String(list.length), sub: `NEAREST ${Math.round(list[0]!.advisory.distanceNm)} NM` };
+    if (worst.lvl >= 2) return { value: String(items.length), sub: worst.label, accent: worst.lvl === 3 ? RED : AMBER };
+    return { value: String(items.length), sub: `${items.length} PIREP · 0 SIGMET` };
 }
 
-/** One PIREP after a press: condition, height, and who reported it how far away. */
-export function pirepDetail(p: Pirep): Reading {
-    const a = p.advisory;
+const COMPASS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+
+/** "40 NM NW", or just the distance when StrataWx gives no bearing. */
+function where(a: Advisory): string {
+    const nm = `${Math.round(a.distanceNm)} NM`;
+    return typeof a.bearingDeg === "number" ? `${nm} ${COMPASS[Math.round(a.bearingDeg / 45) % 8]}` : nm;
+}
+
+const fl = (ft: number) => `${String(Math.round(ft / 100)).padStart(3, "0")}`;
+
+/** SIGMET hazards as short words that fit a key. */
+const SIGMET_HAZARD: Record<string, string> = {
+    CONVECTIVE: "T-STORMS",
+    TURB: "TURB",
+    ICE: "ICE",
+    IFR: "IFR",
+    "MTN OBSCN": "MTN OBSC",
+};
+
+/** One advisory after a press. A PIREP: condition, height, who and where. A SIGMET: hazard, levels, where, with the red ring. */
+export function advisoryDetail(item: Item): Reading {
+    const a = item.advisory;
+    if (item.kind === "SIGMET") {
+        const hazard = SIGMET_HAZARD[a.hazard] ?? "SIGMET";
+        const sev = a.severity ? `${a.severity.split(/[\s-]/)[0]} ` : "";
+        const lo = a.altLowFt;
+        const hi = a.altHiFt;
+        const levels =
+            lo !== undefined && hi !== undefined ? `${lo > 0 ? `FL${fl(lo)}` : "SFC"}-${fl(hi)}` : hi !== undefined ? `TO FL${fl(hi)}` : "";
+        return { value: levels ? `${sev}${hazard}|${levels}` : `${sev}${hazard}`, sub: where(a), accent: RED };
+    }
     let condition: string;
-    if (p.ice && level(p.ice) > 0) condition = `${p.ice} ICE`;
-    else if (p.turb) condition = level(p.turb) === 0 ? "SMOOTH" : `${p.turb} TURB`;
+    if (item.ice && level(item.ice) > 0) condition = `${item.ice} ICE`;
+    else if (item.turb) condition = level(item.turb) === 0 ? "SMOOTH" : `${item.turb} TURB`;
     else condition = "REPORT";
     const ft = a.altLowFt || a.altHiFt;
-    const height = ft && ft > 0 ? `FL${String(Math.round(ft / 100)).padStart(3, "0")}` : "";
-    const lvl = Math.max(level(p.turb), level(p.ice));
+    const height = ft && ft > 0 ? `FL${fl(ft)}` : "";
+    const lvl = Math.max(level(item.turb), level(item.ice));
     return {
         value: height ? `${condition}|${height}` : condition,
-        sub: `${a.reporterType ?? "PIREP"} · ${Math.round(a.distanceNm)} NM`,
+        sub: `${a.reporterType ?? "PIREP"} · ${where(a)}`,
         accent: lvl === 3 ? RED : lvl === 2 ? AMBER : undefined,
     };
 }
