@@ -1,10 +1,10 @@
 {
     "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
-    "Name": "StrataWX",
-    "Version": "1.0.0.7",
+    "Name": "WX Deck for StrataWX",
+    "Version": "1.0.0.8",
     "Author": "ACMS Digital Systems",
     "Description": "Altimeter, temperature, wind and PIREPs from StrataWx for Microsoft Flight Simulator, on keys.",
-    "Category": "StrataWX",
+    "Category": "WX Deck for StrataWX",
     "CategoryIcon": "imgs/plugin/category",
     "Icon": "imgs/plugin/icon",
     "UUID": "com.acms.stratawx",

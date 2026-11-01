@@ -1,6 +1,6 @@
-# Builds the ready-made "StrataWX" profile for the Stream Deck + XL, packed into the plugin:
+# Builds the ready-made "WX Deck for StrataWX" profile for the Stream Deck + XL, packed into the plugin:
 #   com.acms.stratawx.sdPlugin/profiles/StrataWX-PlusXL.streamDeckProfile
-# Only this plugin's own actions: the six StrataWX keys across the top row, in the order on the
+# Only this plugin's own actions: the six WX Deck keys across the top row, in the order on the
 # owner's deck; every other key and all six dials empty (owner, 2026-10-31: "No other buttons or
 # stuff just whats relevant so we can package those profiles").
 #
@@ -49,7 +49,7 @@ keys = {f"{col},0": action(col, name, kind) for col, (name, kind) in enumerate(T
 
 root = {
     "Device": {"Model": PLUS_XL_MODEL, "UUID": ""},
-    "Name": "StrataWX",
+    "Name": "WX Deck for StrataWX",
     "Pages": {"Current": PAGE_ID.lower(), "Default": PAGE_ID.lower(), "Pages": [PAGE_ID.lower()]},
     "Version": "3.0",
 }

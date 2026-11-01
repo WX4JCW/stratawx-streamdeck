@@ -1,10 +1,10 @@
-# StrataWX
+# WX Deck for StrataWX
 
 From ACMS Digital Systems, makers of [Datalink Pro](https://acmsdigital.com): a Windows app that puts a virtual ACARS terminal in your MSFS 2020 or 2024 cockpit, with an automated airline dispatch office on the other end.
 
 A Stream Deck plugin that shows the weather StrataWx is flying you through
-in Microsoft Flight Simulator, on six keys in the Panel style (the same look as the
-ChasePlane and Sim Clock plugins):
+in Microsoft Flight Simulator, on six keys in the Panel style (the same look as
+Camera Deck for ChasePlane and MSFS SimClock):
 
 | Key | Shows |
 |---|---|
@@ -16,7 +16,7 @@ ChasePlane and Sim Clock plugins):
 
 ## Ready-made profile
 
-The plugin carries a **StrataWX** profile for the Stream Deck + XL: the six keys across the top
+The plugin carries a **WX Deck for StrataWX** profile for the Stream Deck + XL: the six keys across the top
 row, everything else empty, for you to add to. Stream Deck offers it when the plugin is installed
 and does not switch to it on its own. The file is
 `com.acms.stratawx.sdPlugin/profiles/StrataWX-PlusXL.streamDeckProfile`, built by

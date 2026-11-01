@@ -1,7 +1,7 @@
 /**
  * The Panel key style shared with the ChasePlane and Sim Clock plugins: key tinted a deep
  * shade of the app's colour, a solid caption band on top, the value in the middle, a
- * status line at the bottom, and a ring for an alert. StrataWX has one colour, sky cyan.
+ * status line at the bottom, and a ring for an alert. WX Deck has one colour, sky cyan.
  * Only flat shapes and text, which Stream Deck draws reliably.
  */
 const HUE = 190;

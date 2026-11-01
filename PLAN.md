@@ -1,4 +1,4 @@
-# StrataWX Stream Deck plugin: plan
+# WX Deck for StrataWX (Stream Deck plugin): plan
 
 Owner's ask, 2026-10-31: buttons on the main sim deck page showing
 1. altimeter, 2. temperature (one key in C, one in F), 3. winds, 4. any PIREPs.
