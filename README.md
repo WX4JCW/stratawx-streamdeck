@@ -14,6 +14,14 @@ ChasePlane and Sim Clock plugins):
 | **Conditions** | an icon and word for the weather at the aircraft (CLEAR, FEW, SCATTERED, BROKEN, OVERCAST, RAIN, SNOW, T-STORM, FOG, MIST), with the ceiling (lowest broken or overcast layer above the ground) or, with no ceiling, the visibility; a red ring for a thunderstorm |
 | **Advisories** | how many PIREPs and SIGMETs the StrataWx app lists on its airport page (within 100 NM of the station it takes the weather from); a red ring for any SIGMET, otherwise amber for a moderate turbulence or icing PIREP, red for severe. Press to step through them, SIGMETs first, then PIREPs, nearest first |
 
+## Ready-made profile
+
+The plugin carries a **StrataWX** profile for the Stream Deck + XL: the six keys across the top
+row, everything else empty, for you to add to. Stream Deck offers it when the plugin is installed
+and does not switch to it on its own. The file is
+`com.acms.stratawx.sdPlugin/profiles/StrataWX-PlusXL.streamDeckProfile`, built by
+`python tools/profile/make_profile.py` from the repository root.
+
 ## How it reads StrataWx
 
 The StrataWx desktop app runs a local weather service on `127.0.0.1:19286`. The plugin asks it
