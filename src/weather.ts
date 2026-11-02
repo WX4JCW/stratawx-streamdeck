@@ -12,7 +12,7 @@ const PA_PER_INHG = 3386.389;
 /** Below this height above ground the aircraft counts as on the surface. */
 const SURFACE_AGL_M = 15;
 
-/** Ring colours for alerts; the key itself stays the app's sky cyan. */
+/** Ring colours for alerts; the key itself stays the app's sky blue. */
 export const ICE = "#E8F7FF";
 export const AMBER = "#FFB020";
 export const RED = "#FF4040";

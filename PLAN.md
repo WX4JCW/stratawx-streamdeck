@@ -15,7 +15,7 @@ every few seconds, and never changes StrataWx:
 
 The plugin never calls any other address (some of them change StrataWx settings).
 
-## Keys (Panel style, one color for the app: sky cyan, hue 190)
+## Keys (Panel style, one color for the app: sky blue, hue 205 (owner, 2026-11-01: "stratawx should be a sky blue"))
 
 | Key | Caption | Value | Status line |
 |---|---|---|---|
@@ -26,7 +26,7 @@ The plugin never calls any other address (some of them change StrataWx settings)
 | PIREPs | PIREPS | count nearby (or NONE) | NEAREST 5 NM |
 
 - Press the PIREPs key to step through them: PIREP 1/5, SMOOTH / FL100, A319 · 5 NM. A last press goes back to the count.
-- Alert colors (owner, 2026-10-31: "Yes, add them"). The key stays sky cyan; only the ring and status line change:
+- Alert colors (owner, 2026-10-31: "Yes, add them"). The key stays sky blue; only the ring and status line change:
   - Temp C and Temp F at 0°C or below: ice-white ring, status FREEZING.
   - PIREPs: amber ring for any moderate turbulence or icing report nearby, red ring for severe;
     status names the worst one (MOD TURB, MOD ICE, SEV TURB, SEV ICE).

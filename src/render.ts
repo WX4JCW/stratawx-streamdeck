@@ -1,10 +1,10 @@
 /**
  * The Panel key style shared with the ChasePlane and Sim Clock plugins: key tinted a deep
  * shade of the app's colour, a solid caption band on top, the value in the middle, a
- * status line at the bottom, and a ring for an alert. WX Deck has one colour, sky cyan.
+ * status line at the bottom, and a ring for an alert. WX Deck has one colour, sky blue.
  * Only flat shapes and text, which Stream Deck draws reliably.
  */
-const HUE = 190;
+const HUE = 205;
 const SAT = 85;
 const FONT = "Segoe UI, Arial, sans-serif";
 
@@ -86,7 +86,7 @@ export type Look = {
     sub?: string;
     /** Ring and status line colour for an alert (freezing, a moderate or severe PIREP). */
     accent?: string;
-    /** Colour for the main text, such as the temperature scale; otherwise white on an alert, the app's light cyan at rest. */
+    /** Colour for the main text, such as the temperature scale; otherwise white on an alert, the app's light blue at rest. */
     valueColor?: string;
     /** A weather icon; the value then becomes a smaller word under it. */
     icon?: keyof typeof ICONS;
