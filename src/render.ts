@@ -1,7 +1,7 @@
 /**
- * The Panel key style shared with the ChasePlane and Sim Clock plugins: key tinted a deep
- * shade of the app's colour, a solid caption band on top, the value in the middle, a
- * status line at the bottom, and a ring for an alert. WX Deck has one colour, sky blue.
+ * The Panel key style shared with Camera Deck for ChasePlane and MSFS SimClock: a plain charcoal
+ * key, a solid caption band on top in the app's colour with white caption text, the value in the
+ * middle, a status line at the bottom, and a ring for an alert. WX Deck has one colour, sky blue.
  * Only flat shapes and text, which Stream Deck draws reliably.
  */
 const HUE = 205;
@@ -17,15 +17,25 @@ function hsl(h: number, s: number, l: number): string {
     return `#${[0, 8, 4].map((n) => Math.round(f(n) * 255).toString(16).padStart(2, "0")).join("")}`;
 }
 
-const COLORS = { deep: hsl(HUE, SAT * 0.8, 11), band: hsl(HUE, SAT, 52), text: hsl(HUE, SAT, 78) };
-
-/** Black or white, whichever reads better on `background` (WCAG contrast). */
-function ink(background: string): string {
+/** WCAG contrast of white text on `background`. */
+function whiteContrast(background: string): number {
     const lin = (v: number) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
     const [r = 0, g = 0, b = 0] = [1, 3, 5].map((i) => lin(parseInt(background.slice(i, i + 2), 16) / 255));
-    const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    return (l + 0.05) / 0.05 >= 1.05 / (l + 0.05) ? "#0A0A0A" : "#FFFFFF";
+    return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05);
 }
+
+/**
+ * The band is the colour at 42% lightness, darkened a point at a time (down to 24%) while white
+ * caption text would read under 3:1. The key body is plain charcoal, the same for every app.
+ */
+function bandColor(): string {
+    let l = 42;
+    while (l > 24 && whiteContrast(hsl(HUE, SAT, l)) < 3) l--;
+    return hsl(HUE, SAT, l);
+}
+
+const COLORS = { deep: "#141416", band: bandColor(), text: hsl(HUE, SAT, 78) };
+const CAPTION_INK = "#FFFFFF";
 
 function xml(s: string): string {
     return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -107,7 +117,7 @@ export function keyImage(look: Look): string {
         `<rect width="144" height="144" fill="#000000"/>` +
         `<rect width="144" height="144" rx="18" fill="${c.deep}"/>` +
         `<rect width="144" height="30" rx="18" fill="${c.band}"/><rect y="16" width="144" height="14" fill="${c.band}"/>` +
-        line(21, look.caption, ink(c.band), 124, 15, 10) +
+        line(21, look.caption, CAPTION_INK, 124, 15, 10) +
         (look.accent ? `<rect x="3" y="3" width="138" height="138" rx="16" fill="none" stroke="${look.accent}" stroke-width="5"/>` : "") +
         value +
         (look.sub ? line(130, look.sub, look.accent ?? c.text, 124, 16, 10) : "");

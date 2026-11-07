@@ -17,6 +17,11 @@ The plugin never calls any other address (some of them change StrataWx settings)
 
 ## Keys (Panel style, one color for the app: sky blue, hue 205 (owner, 2026-11-01: "stratawx should be a sky blue"))
 
+Key look (owner, 2026-11-07, via the Camera Deck change: "A without glow looks way better to me",
+"send the same to stratawx"): plain charcoal body #141416 on every key, band the colour at 42%
+lightness (darkened while white text reads under 3:1, to 24% at most) = #107AC6, white caption
+text, value text the colour at 78%.
+
 | Key | Caption | Value | Status line |
 |---|---|---|---|
 | Altimeter | ALTIMETER | 30.04 | INHG |
