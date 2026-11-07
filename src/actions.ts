@@ -166,6 +166,81 @@ export class WindsAloftAction extends SingletonAction {
     }
 }
 
+/** The Weather dial's pages, in the order of the keys on the deck: caption and how to read it. */
+const PAGES: { caption: string; read: (snap: Extract<Snapshot, { state: "ok" }>) => Reading }[] = [
+    { caption: "ALTIMETER", read: (s) => altimeter(s.current, s.status) },
+    { caption: "TEMP °C", read: (s) => temperature(s.current, s.status, "C") },
+    { caption: "TEMP °F", read: (s) => temperature(s.current, s.status, "F") },
+    { caption: "WIND", read: (s) => wind(s.current, s.status) },
+    { caption: "CONDITIONS", read: (s) => conditions(s.current, s.status) },
+    { caption: "FREEZING LVL", read: (s) => freezingLevel(s.current, s.status) },
+    {
+        caption: "ADVISORIES",
+        read: (s) => (s.advisories ? advisoryCount(advisories(s.advisories.items), s.advisories.rangeNm) : { value: "--", sub: "WAITING" }),
+    },
+];
+
+/**
+ * Everything the keys show, on one Stream Deck + dial. Turning steps through the pages,
+ * pushing the dial or tapping the strip goes back to the first. Each dial keeps its own page.
+ */
+@action({ UUID: "com.acms.stratawx.weatherdial" })
+export class WeatherDialAction extends SingletonAction {
+    private dials = new Map<string, { dial: DialAction; page: number; drawn: string }>();
+
+    override onWillAppear(ev: WillAppearEvent): void {
+        if (!ev.action.isDial()) return;
+        this.dials.set(ev.action.id, { dial: ev.action, page: 0, drawn: "" });
+        live.add(this);
+        strataWx.start();
+        this.redraw();
+    }
+
+    override onWillDisappear(ev: WillDisappearEvent): void {
+        this.dials.delete(ev.action.id);
+        if (this.dials.size === 0) live.delete(this);
+        if (live.size === 0) strataWx.stop();
+    }
+
+    override onDialRotate(ev: DialRotateEvent): void {
+        const entry = this.dials.get(ev.action.id);
+        if (!entry) return;
+        entry.page = (((entry.page + ev.payload.ticks) % PAGES.length) + PAGES.length) % PAGES.length;
+        this.redraw();
+    }
+
+    override onDialDown(ev: DialDownEvent): void {
+        this.toFirst(ev.action.id);
+    }
+
+    override onTouchTap(ev: TouchTapEvent): void {
+        this.toFirst(ev.action.id);
+    }
+
+    private toFirst(id: string): void {
+        const entry = this.dials.get(id);
+        if (!entry) return;
+        entry.page = 0;
+        this.redraw();
+    }
+
+    redraw(): void {
+        const snap = strataWx.snapshot;
+        for (const entry of this.dials.values()) {
+            const page = PAGES[entry.page]!;
+            const caption = `${page.caption} · ${entry.page + 1}/${PAGES.length}`;
+            const look: Look =
+                snap.state === "ok"
+                    ? { caption, ...page.read(snap) }
+                    : { caption, value: "--", sub: snap.state === "waiting" ? "WAITING" : "STRATAWX OFF" };
+            const image = stripImage(look);
+            if (entry.drawn === image) continue;
+            entry.drawn = image;
+            void entry.dial.setFeedback({ canvas: image });
+        }
+    }
+}
+
 @action({ UUID: "com.acms.stratawx.conditions" })
 export class ConditionsAction extends WeatherAction {
     protected caption() { return "CONDITIONS"; }

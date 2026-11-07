@@ -125,30 +125,38 @@ export function keyImage(look: Look): string {
     return `data:image/svg+xml;base64,${Buffer.from(svg, "utf8").toString("base64")}`;
 }
 
-/** One dial's section of the touch strip (200 x 100) in the same Panel look: caption band, value, status line. */
+/**
+ * One dial's section of the touch strip (200 x 100) in the same Panel look: caption band, value,
+ * status line. With a weather icon, the icon sits on the left and the word and status line beside it.
+ */
 export function stripImage(look: Look): string {
     const c = COLORS;
     const valueFill = look.valueColor ?? (look.accent ? "#FFFFFF" : c.text);
-    const text = (y: number, raw: string, fill: string, max: number, min: number) => {
+    const text = (x: number, y: number, raw: string, fill: string, width: number, max: number, min: number) => {
         let value = raw.toUpperCase();
-        let size = Math.min(max, Math.floor(180 / (Math.max(1, value.length) * CAPS_GLYPH)));
+        let size = Math.min(max, Math.floor(width / (Math.max(1, value.length) * CAPS_GLYPH)));
         if (size < min) {
             size = min;
-            value = `${value.slice(0, Math.floor(180 / (size * CAPS_GLYPH)) - 1)}…`;
+            value = `${value.slice(0, Math.floor(width / (size * CAPS_GLYPH)) - 1)}…`;
         }
         return (
-            `<text x="100" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${size}" ` +
+            `<text x="${x}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${size}" ` +
             `font-weight="bold" fill="${fill}">${xml(value)}</text>`
         );
     };
+    const middle = look.icon
+        ? // The key icons are drawn around (72, 68); scaled to 0.7 they sit at the strip's left.
+          `<g transform="translate(-5 14) scale(0.7)">${ICONS[look.icon]}</g>` +
+          text(128, 64, look.value, valueFill, 128, 22, 12) +
+          (look.sub ? text(128, 88, look.sub, look.accent ?? c.text, 128, 13, 9) : "")
+        : text(100, 66, look.value, valueFill, 180, 32, 14) + (look.sub ? text(100, 91, look.sub, look.accent ?? c.text, 180, 15, 10) : "");
     const body =
         `<rect width="200" height="100" fill="#000000"/>` +
         `<rect x="2" y="2" width="196" height="96" rx="14" fill="${c.deep}"/>` +
         `<rect x="2" y="2" width="196" height="24" rx="14" fill="${c.band}"/><rect x="2" y="14" width="196" height="12" fill="${c.band}"/>` +
-        text(19, look.caption, CAPTION_INK, 14, 10) +
+        text(100, 19, look.caption, CAPTION_INK, 180, 14, 10) +
         (look.accent ? `<rect x="4" y="4" width="192" height="92" rx="12" fill="none" stroke="${look.accent}" stroke-width="3"/>` : "") +
-        text(66, look.value, valueFill, 32, 14) +
-        (look.sub ? text(91, look.sub, look.accent ?? c.text, 15, 10) : "");
+        middle;
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">${body}</svg>`;
     return `data:image/svg+xml;base64,${Buffer.from(svg, "utf8").toString("base64")}`;
 }

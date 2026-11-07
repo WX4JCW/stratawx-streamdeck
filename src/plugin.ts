@@ -8,6 +8,7 @@ import {
     redrawAll,
     TempCAction,
     TempFAction,
+    WeatherDialAction,
     WindAction,
     WindsAloftAction,
 } from "./actions.js";
@@ -23,6 +24,7 @@ streamDeck.actions.registerAction(new AdvisoriesAction());
 streamDeck.actions.registerAction(new ConditionsAction());
 streamDeck.actions.registerAction(new FreezingLevelAction());
 streamDeck.actions.registerAction(new WindsAloftAction());
+streamDeck.actions.registerAction(new WeatherDialAction());
 
 // One feed for every key and dial: each StrataWx answer redraws whatever changed.
 strataWx.onChange = redrawAll;

@@ -71,3 +71,8 @@ text, value text the colour at 78%.
   none shows SURFACE (all below, ice ring) or NONE (all above). Winds Aloft (first dial in the packed
   profile): turn steps through `windLayers` from the surface up, push or tap returns to the surface;
   strip shows the height and direction/speed, coloured like the Wind key within 3,000 ft of the ground.
+- Weather dial (owner, 2026-11-07: "can we get another dial that we can cycle through that has the
+  data the buttons show"; approved the mockup: "thats it"): seven pages in key order (Altimeter,
+  Temp °C, Temp °F, Wind, Conditions, Freezing Level, Advisories count), caption "WIND · 4/7", same
+  colours and rings as the keys; turn steps, push or tap goes back to page 1. Second dial in the
+  packed profile.

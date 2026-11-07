@@ -1,7 +1,7 @@
 {
     "$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
     "Name": "WX Deck for StrataWX",
-    "Version": "1.0.0.12",
+    "Version": "1.0.0.13",
     "Author": "ACMS Digital Systems",
     "Description": "Altimeter, temperature, wind and PIREPs from StrataWx for Microsoft Flight Simulator, on keys.",
     "Category": "WX Deck for StrataWX",
@@ -157,6 +157,31 @@
                     "Rotate": "Step through the wind levels",
                     "Push": "Back to the surface wind",
                     "Touch": "Back to the surface wind"
+                }
+            }
+        },
+        {
+            "Name": "Weather",
+            "UUID": "com.acms.stratawx.weatherdial",
+            "Icon": "imgs/actions/icon",
+            "Tooltip": "Everything the WX Deck keys show, on one dial.",
+            "Controllers": [
+                "Encoder"
+            ],
+            "UserTitleEnabled": false,
+            "SupportedInMultiActions": false,
+            "States": [
+                {
+                    "Image": "imgs/actions/key"
+                }
+            ],
+            "Encoder": {
+                "layout": "layouts/strip.json",
+                "Icon": "imgs/actions/icon",
+                "TriggerDescription": {
+                    "Rotate": "Next or previous reading",
+                    "Push": "Back to the altimeter",
+                    "Touch": "Back to the altimeter"
                 }
             }
         }
