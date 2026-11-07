@@ -267,3 +267,62 @@ export function advisoryDetail(item: Item): Reading {
         accent: lvl === 3 ? RED : lvl === 2 ? AMBER : undefined,
     };
 }
+
+/** Feet above sea level as a pilot reads it: 14,300, or FL180 and up as a flight level. */
+function feetLabel(m: number): string {
+    const ft = Math.round((m * FT_PER_M) / 100) * 100;
+    return ft >= 18000 ? `FL${String(ft / 100).padStart(3, "0")}` : ft.toLocaleString("en-US");
+}
+
+/**
+ * The freezing level: where the temperature profile StrataWx returns (the surface, then
+ * `hazards.levels` above it) crosses 0 °C, in feet above sea level. More than one crossing
+ * shows the lowest and says how many; no crossing says whether it is all above or all below.
+ */
+export function freezingLevel(current: Current, _status: Status): Reading {
+    const ground = current.groundElevationM;
+    const points = [
+        { alt: ground, t: current.temperatureC },
+        ...(current.hazards?.levels ?? []).filter((l) => l.altitudeM > ground).map((l) => ({ alt: l.altitudeM, t: l.temperatureC })),
+    ].sort((a, b) => a.alt - b.alt);
+    if (points.length < 2) return { value: "--", sub: "NO PROFILE" };
+    const crossings: number[] = [];
+    for (let i = 1; i < points.length; i++) {
+        const lo = points[i - 1]!;
+        const hi = points[i]!;
+        if (lo.t > 0 !== hi.t > 0) crossings.push(lo.alt + ((hi.alt - lo.alt) * lo.t) / (lo.t - hi.t));
+    }
+    if (crossings.length === 0) {
+        return points[0]!.t <= 0
+            ? { value: "SURFACE", sub: "ALL BELOW 0°C", accent: ICE }
+            : { value: "NONE", sub: "ALL ABOVE 0°C" };
+    }
+    const value = feetLabel(crossings[0]!);
+    const ft = !value.startsWith("FL");
+    return crossings.length === 1
+        ? { value, sub: ft ? "FT MSL" : "MSL" }
+        : { value, sub: `LOWEST OF ${crossings.length}` };
+}
+
+/** The wind layers StrataWx returns, surface first, as the dial steps through them. */
+export function windLayerCount(current: Current): number {
+    return current.windLayers.length;
+}
+
+/** One wind layer for the dial: its height (SURFACE, 3,000 FT, FL240), and direction/speed coloured like the Wind key near the ground. */
+export function windLayer(current: Current, index: number): Reading {
+    const layers = [...current.windLayers].sort((a, b) => a.altitudeM - b.altitudeM);
+    const l = layers[Math.max(0, Math.min(index, layers.length - 1))];
+    if (!l) return { value: "--", sub: "NO WIND DATA" };
+    const ground = current.groundElevationM;
+    const surface = index <= 0;
+    const at = surface ? ground : Math.max(l.altitudeM, ground);
+    const height = surface ? "SURFACE" : feetLabel(at);
+    const sub = surface ? "SURFACE" : height.startsWith("FL") ? height : `${height} FT`;
+    const speed = Math.round(l.speedKt);
+    if (speed < 3) return { value: "CALM", sub };
+    let dir = Math.round(l.directionDeg / 10) * 10 % 360;
+    if (dir === 0) dir = 360;
+    const low = at - ground <= WIND_COLOR_AGL_M;
+    return { value: `${String(dir).padStart(3, "0")}/${String(speed).padStart(2, "0")}`, sub, valueColor: low ? windColor(speed) : undefined };
+}

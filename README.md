@@ -3,7 +3,7 @@
 From ACMS Digital Systems, makers of [Datalink Pro](https://acmsdigital.com): a Windows app that puts a virtual ACARS terminal in your MSFS 2020 or 2024 cockpit, with an automated airline dispatch office on the other end.
 
 A Stream Deck plugin that shows the weather StrataWx is flying you through
-in Microsoft Flight Simulator, on six keys in the Panel style (the same look as
+in Microsoft Flight Simulator, on seven keys and a dial in the Panel style (the same look as
 Camera Deck for ChasePlane and MSFS SimClock):
 
 | Key | Shows |
@@ -12,12 +12,14 @@ Camera Deck for ChasePlane and MSFS SimClock):
 | **Temp °C** / **Temp °F** | outside air temperature at the aircraft, the number coloured in Apple Weather's steps (blue at 0 °C or below, light blue to 14, green 15–19, yellow 20–24, orange 25–29, red 30 and up); an ice ring and FREEZING at 0 °C or below |
 | **Wind** | wind at the aircraft's height (`270/18`, or `CALM`); within 3,000 ft of the ground the number is coloured by Beaufort strength: yellow 11–21 kt, orange 22–33, red 34 and up |
 | **Conditions** | an icon and word for the weather at the aircraft (CLEAR, FEW, SCATTERED, BROKEN, OVERCAST, RAIN, SNOW, T-STORM, FOG, MIST), with the ceiling (lowest broken or overcast layer above the ground) or, with no ceiling, the visibility; a red ring for a thunderstorm |
+| **Freezing Level** | where the temperature crosses 0 °C, in feet above sea level (FL above 18,000 ft), from the temperature levels StrataWx sets; with more than one crossing the lowest and how many, otherwise SURFACE (all below 0 °C, ice ring) or NONE (all above) |
+| **Winds Aloft** (dial) | the wind at each level StrataWx sets, from the surface up: turn to step through the levels, push or tap the strip for the surface wind again |
 | **Advisories** | how many PIREPs and SIGMETs the StrataWx app lists on its airport page (within 100 NM of the station it takes the weather from); a red ring for any SIGMET, otherwise amber for a moderate turbulence or icing PIREP, red for severe. Press to step through them, SIGMETs first, then PIREPs, nearest first |
 
 ## Ready-made profile
 
-The plugin carries a **WX Deck for StrataWX** profile for the Stream Deck + XL: the six keys across the top
-row, everything else empty, for you to add to. Stream Deck offers it when the plugin is installed
+The plugin carries a **WX Deck for StrataWX** profile for the Stream Deck + XL: the seven keys across the top
+row and Winds Aloft on the first dial, everything else empty, for you to add to. Stream Deck offers it when the plugin is installed
 and does not switch to it on its own. The file is
 `com.acms.stratawx.sdPlugin/profiles/StrataWX-PlusXL.streamDeckProfile`, built by
 `python tools/profile/make_profile.py` from the repository root.

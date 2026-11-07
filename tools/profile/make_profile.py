@@ -1,8 +1,8 @@
 # Builds the ready-made "WX Deck for StrataWX" profile for the Stream Deck + XL, packed into the plugin:
 #   com.acms.stratawx.sdPlugin/profiles/StrataWX-PlusXL.streamDeckProfile
-# Only this plugin's own actions: the six WX Deck keys across the top row, in the order on the
-# owner's deck; every other key and all six dials empty (owner, 2026-10-31: "No other buttons or
-# stuff just whats relevant so we can package those profiles").
+# Only this plugin's own actions: the WX Deck keys across the top row, in the order on the owner's
+# deck, Freezing Level after them, and Winds Aloft on the first dial; everything else empty
+# (owner, 2026-10-31: "No other buttons or stuff just whats relevant so we can package those profiles").
 #
 # Same format as the ChasePlane plugin's profile: a zip holding <PROFILE>.sdProfile/manifest.json
 # (Device model with an empty UUID = any device of that model, Name, Pages, Version "3.0") and
@@ -44,8 +44,10 @@ TOP_ROW = [
     ("Wind", "wind"),
     ("Advisories", "pireps"),  # the Advisories action keeps its first ID, "pireps"
     ("Conditions", "conditions"),
+    ("Freezing Level", "freezing"),
 ]
 keys = {f"{col},0": action(col, name, kind) for col, (name, kind) in enumerate(TOP_ROW)}
+dials = {"0,0": action(100, "Winds Aloft", "windsaloft")}
 
 root = {
     "Device": {"Model": PLUS_XL_MODEL, "UUID": ""},
@@ -53,7 +55,7 @@ root = {
     "Pages": {"Current": PAGE_ID.lower(), "Default": PAGE_ID.lower(), "Pages": [PAGE_ID.lower()]},
     "Version": "3.0",
 }
-page = {"Controllers": [{"Actions": keys, "Type": "Keypad"}, {"Actions": {}, "Type": "Encoder"}], "Icon": "", "Name": ""}
+page = {"Controllers": [{"Actions": keys, "Type": "Keypad"}, {"Actions": dials, "Type": "Encoder"}], "Icon": "", "Name": ""}
 
 base = f"{PROFILE_ID}.sdProfile/"
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
@@ -62,4 +64,4 @@ with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
     z.writestr(base + "Profiles/", "")
     z.writestr(f"{base}Profiles/{PAGE_ID}/", "")
     z.writestr(f"{base}Profiles/{PAGE_ID}/manifest.json", json.dumps(page))
-print(f"written {OUT}: {len(keys)} keys, plugin {PLUGIN['Version']}")
+print(f"written {OUT}: {len(keys)} keys, {len(dials)} dial, plugin {PLUGIN['Version']}")

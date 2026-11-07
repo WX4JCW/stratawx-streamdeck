@@ -1,11 +1,34 @@
-import { action, SingletonAction, type KeyAction, type KeyDownEvent, type WillAppearEvent, type WillDisappearEvent } from "@elgato/streamdeck";
+import {
+    action,
+    SingletonAction,
+    type DialAction,
+    type DialDownEvent,
+    type DialRotateEvent,
+    type KeyAction,
+    type KeyDownEvent,
+    type TouchTapEvent,
+    type WillAppearEvent,
+    type WillDisappearEvent,
+} from "@elgato/streamdeck";
 
-import { keyImage, type Look } from "./render.js";
+import { keyImage, stripImage, type Look } from "./render.js";
 import { strataWx, type Current, type Snapshot, type Status } from "./stratawx.js";
-import { advisories, advisoryCount, advisoryDetail, altimeter, conditions, temperature, wind, type Reading } from "./weather.js";
+import {
+    advisories,
+    advisoryCount,
+    advisoryDetail,
+    altimeter,
+    conditions,
+    freezingLevel,
+    temperature,
+    wind,
+    windLayer,
+    windLayerCount,
+    type Reading,
+} from "./weather.js";
 
-/** Every placed key, so the feed can redraw them all and stop polling when none are left. */
-const live = new Set<WeatherAction>();
+/** Every action with a placed key or dial, so the feed can redraw them all and stop polling when none are left. */
+const live = new Set<{ redraw(): void }>();
 
 export function redrawAll(): void {
     for (const a of live) a.redraw();
@@ -73,6 +96,74 @@ export class TempFAction extends WeatherAction {
 export class WindAction extends WeatherAction {
     protected caption() { return "WIND"; }
     protected read(current: Current, status: Status) { return wind(current, status); }
+}
+
+@action({ UUID: "com.acms.stratawx.freezing" })
+export class FreezingLevelAction extends WeatherAction {
+    protected caption() { return "FREEZING LVL"; }
+    protected read(current: Current, status: Status) { return freezingLevel(current, status); }
+}
+
+/**
+ * Winds aloft on a Stream Deck + dial. Turning steps through the wind layers StrataWx
+ * returns, surface first; pushing the dial or tapping the strip goes back to the surface.
+ * Each dial keeps its own layer.
+ */
+@action({ UUID: "com.acms.stratawx.windsaloft" })
+export class WindsAloftAction extends SingletonAction {
+    private dials = new Map<string, { dial: DialAction; layer: number; drawn: string }>();
+
+    override onWillAppear(ev: WillAppearEvent): void {
+        if (!ev.action.isDial()) return;
+        this.dials.set(ev.action.id, { dial: ev.action, layer: 0, drawn: "" });
+        live.add(this);
+        strataWx.start();
+        this.redraw();
+    }
+
+    override onWillDisappear(ev: WillDisappearEvent): void {
+        this.dials.delete(ev.action.id);
+        if (this.dials.size === 0) live.delete(this);
+        if (live.size === 0) strataWx.stop();
+    }
+
+    override onDialRotate(ev: DialRotateEvent): void {
+        const entry = this.dials.get(ev.action.id);
+        const snap = strataWx.snapshot;
+        if (!entry || snap.state !== "ok") return;
+        const last = windLayerCount(snap.current) - 1;
+        entry.layer = Math.max(0, Math.min(last, entry.layer + ev.payload.ticks));
+        this.redraw();
+    }
+
+    override onDialDown(ev: DialDownEvent): void {
+        this.toSurface(ev.action.id);
+    }
+
+    override onTouchTap(ev: TouchTapEvent): void {
+        this.toSurface(ev.action.id);
+    }
+
+    private toSurface(id: string): void {
+        const entry = this.dials.get(id);
+        if (!entry) return;
+        entry.layer = 0;
+        this.redraw();
+    }
+
+    redraw(): void {
+        const snap = strataWx.snapshot;
+        for (const entry of this.dials.values()) {
+            const look: Look =
+                snap.state === "ok"
+                    ? { caption: "WINDS ALOFT", ...windLayer(snap.current, entry.layer) }
+                    : { caption: "WINDS ALOFT", value: "--", sub: snap.state === "waiting" ? "WAITING" : "STRATAWX OFF" };
+            const image = stripImage(look);
+            if (entry.drawn === image) continue;
+            entry.drawn = image;
+            void entry.dial.setFeedback({ canvas: image });
+        }
+    }
 }
 
 @action({ UUID: "com.acms.stratawx.conditions" })

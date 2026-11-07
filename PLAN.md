@@ -65,3 +65,9 @@ text, value text the colour at 78%.
   the weather from (KDAL at the time): PIREPs and SIGMETs within 100 NM. The `/weather/status`
   list it used before had gone empty while the app still showed advisories. Any SIGMET: red ring.
   Press order: SIGMETs first, then PIREPs, each nearest first, with distance and compass direction.
+- Freezing Level key and Winds Aloft dial (owner, 2026-11-07: "fix 1-4 and add the ideas we missed",
+  via the Camera Deck session). Freezing Level: where the surface temperature and `hazards.levels`
+  cross 0 °C, in feet MSL (FL above 18,000); more than one crossing shows the lowest and "LOWEST OF n";
+  none shows SURFACE (all below, ice ring) or NONE (all above). Winds Aloft (first dial in the packed
+  profile): turn steps through `windLayers` from the surface up, push or tap returns to the surface;
+  strip shows the height and direction/speed, coloured like the Wind key within 3,000 ft of the ground.
